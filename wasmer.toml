@@ -1,0 +1,14 @@
+[dependencies]
+"php/php" = "=8.0.10"
+
+[fs]
+"/public" = "public"
+"/vendor" = "vendor"
+
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+[command.annotations.wasi]
+env = ["USE_ZEND_ALLOC=0"]
+main-args = ["-t", "/public", "-S", "localhost:8080"]
