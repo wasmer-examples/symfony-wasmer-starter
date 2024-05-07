@@ -1,14 +1,13 @@
 [dependencies]
-"php/php" = "=8.0.10"
+"arshia001/php" = "=8.3.4-pre.2"
 
 [fs]
-"/public" = "public"
-"/vendor" = "vendor"
+"/app/" = "."
 
 [[command]]
 name = "run"
-module = "php/php:php"
+module = "arshia001/php:php"
 runner = "wasi"
 [command.annotations.wasi]
 env = ["USE_ZEND_ALLOC=0"]
-main-args = ["-t", "/public", "-S", "localhost:8080"]
+main-args = ["-t", "/app/public", "-S", "localhost:8080", "-d", "opcache.enable=1", "-d", "opcache.enable_cli=1"]
