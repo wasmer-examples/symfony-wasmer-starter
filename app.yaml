@@ -1,0 +1,5 @@
+kind: wasmer.io/App.v0
+name: symfony
+owner: wasmer-examples
+package: .
+app_id: da_KE4I8tXUpV42
