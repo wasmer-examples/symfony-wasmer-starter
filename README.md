@@ -34,7 +34,7 @@ php -S localhost:8000 -t public/
 **Option 2.** Use Wasmer.
 
 ```bash
-wasmer run . --net
+wasmer run .
 ```
 
 Then access the application in your browser at the given URL (<https://localhost:8000> by default).
