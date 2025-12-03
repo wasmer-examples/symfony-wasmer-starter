@@ -1,57 +1,39 @@
-Symfony Demo Application
-========================
+# Symfony Demo App + Wasmer
 
-The "Symfony Demo Application" is a reference application created to show how
-to develop applications following the [Symfony Best Practices][1].
+This example shows how to run the official **Symfony Demo Application** on **Wasmer Edge**.
 
-You can also learn about these practices in [the official Symfony Book][5].
+## Demo
 
-Installation
-------------
+`https://<your-subdomain>.wasmer.app/` (deploy to explore the blog UI)
 
-There are 3 different ways of installing this project depending on your needs:
+## How it Works
 
-[Download Composer][6] and use the `composer` binary installed
-on your computer to run these commands:
+The project is the upstream Symfony Demo with a few Wasmer-friendly tweaks:
+
+* `public/index.php` bootstraps the HTTP kernel—Wasmer points web traffic to this front controller.
+* `config/routes.yaml` imports attribute-based controllers under `src/Controller/` (blog, admin, comments, etc.).
+* Doctrine uses the SQLite database defined in `.env` (`data/database.sqlite`), allowing the app to run without an external service.
+* Assets are managed through AssetMapper; run `php bin/console asset-map:compile` during your build step so Wasmer serves optimised assets.
+
+## Running Locally
 
 ```bash
 composer install
-php bin/console asset-map:compile
+php bin/console doctrine:database:create --if-not-exists
+php bin/console doctrine:migrations:migrate --no-interaction
+php bin/console doctrine:fixtures:load --no-interaction
+php -S 127.0.0.1:8000 -t public
 ```
 
-Usage
------
+Open `http://127.0.0.1:8000/` to browse the demo blog. Sample admin accounts seeded by the fixtures include `jane_admin@symfony.com` (password `kitten`).
 
-There's no need to configure anything before running the application. There are
-2 different ways of running this application depending on your needs:
+## Deploying to Wasmer (Overview)
 
-**Option 1.** You can run this command to use the built-in PHP web server:
-
-```bash
-php -S localhost:8000 -t public/
-```
-
-**Option 2.** Use Wasmer.
-
-```bash
-wasmer run .
-```
-
-Then access the application in your browser at the given URL (<https://localhost:8000> by default).
-
-
-Tests
------
-
-Execute this command to run tests:
-
-```bash
-./bin/phpunit
-```
-
-[1]: https://symfony.com/doc/current/best_practices.html
-[2]: https://symfony.com/doc/current/setup.html#technical-requirements
-[3]: https://symfony.com/doc/current/setup/web_server_configuration.html
-[4]: https://symfony.com/download
-[5]: https://symfony.com/book
-[6]: https://getcomposer.org/
+1. Build assets and warm up caches:
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   php bin/console asset-map:compile
+   php bin/console cache:warmup
+   ```
+2. Ensure the SQLite database file lives under `data/` and is writable.
+3. Deploy to Wasmer Edge with a start command like `php -S 0.0.0.0:$PORT -t public` and visit `https://<your-subdomain>.wasmer.app/`.
